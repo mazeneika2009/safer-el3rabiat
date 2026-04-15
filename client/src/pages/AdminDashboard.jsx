@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Users,
-  Car,
-  Banknote,
-  Users2,
-  ArrowUpRight,
-  Gauge,
-  LayoutDashboard,
-  LogOut,
-  ChevronLeft,
-  Loader2,
-  RefreshCcw,
-  ShieldCheck
+  Users, Car, Banknote, Users2, ArrowUpRight, Gauge,
+  LayoutDashboard, LogOut, ChevronLeft, Loader2, RefreshCcw, ShieldCheck
 } from 'lucide-react';
-import { fetchData } from '../services/api';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -25,68 +14,32 @@ export default function AdminDashboard() {
   const getStats = async () => {
     setLoading(true);
     try {
-      const response = await fetchData('/admin/stats');
-      if (response.status === 'OK') {
-        setStats(response.data);
+      const res = await fetch('/api/admin/stats');
+      const data = await res.json();
+      if (data.status === 'OK') {
+        setStats(data.data);
         setError(null);
       } else {
-        throw new Error(response.message || 'Unauthorized access or server error');
+        throw new Error(data.message || 'Unauthorized');
       }
     } catch (err) {
-      console.error('Failed to fetch stats:', err);
       setError('Platform metrics synchronization offline.');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    getStats();
-  }, []);
+  useEffect(() => { getStats(); }, []);
 
   const kpiCards = [
-    {
-      id: 'users',
-      title: 'Global Scale',
-      label: 'Total Registered Users',
-      value: stats?.totalUsers || 0,
-      icon: <Users className="w-6 h-6 text-cyan-400" />,
-      color: 'cyan',
-      description: 'Total accounts across the platform'
-    },
-    {
-      id: 'inventory',
-      title: 'Current Inventory',
-      label: 'Cars For Sale',
-      value: stats?.carsForSale || 0,
-      icon: <Car className="w-6 h-6 text-zinc-400" />,
-      color: 'zinc',
-      description: 'Active listings in the marketplace'
-    },
-    {
-      id: 'sales',
-      title: 'Closed Deals',
-      label: 'Cars Sold',
-      value: stats?.soldCars || 0,
-      icon: <Banknote className="w-6 h-6 text-zinc-400" />,
-      color: 'zinc',
-      description: 'Successfully completed transactions'
-    },
-    {
-      id: 'sellers',
-      title: 'Seller Network',
-      label: 'Total Sellers',
-      value: stats?.totalSellers || 0,
-      icon: <Users2 className="w-6 h-6 text-cyan-400" />,
-      color: 'cyan',
-      description: 'Unique verified vehicle owners'
-    }
+    { id: 'users', title: 'Global Scale', label: 'Total Registered Users', value: stats?.totalUsers || 0, icon: <Users className="w-6 h-6 text-cyan-400" />, description: 'Total accounts across the platform' },
+    { id: 'inventory', title: 'Current Inventory', label: 'Cars For Sale', value: stats?.carsForSale || 0, icon: <Car className="w-6 h-6 text-zinc-400" />, description: 'Active listings in the marketplace' },
+    { id: 'sales', title: 'Closed Deals', label: 'Cars Sold', value: stats?.soldCars || 0, icon: <Banknote className="w-6 h-6 text-zinc-400" />, description: 'Successfully completed transactions' },
+    { id: 'sellers', title: 'Seller Network', label: 'Total Sellers', value: stats?.totalSellers || 0, icon: <Users2 className="w-6 h-6 text-cyan-400" />, description: 'Unique verified vehicle owners' }
   ];
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-300 font-sans tracking-wide selection:bg-cyan-500/30 selection:text-cyan-200">
-
-      {/* Premium Admin Header */}
       <header className="border-b border-zinc-800/60 bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-30">
         <div className="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -100,20 +53,12 @@ export default function AdminDashboard() {
               <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold -mt-1">Administrator Control Panel</p>
             </div>
           </div>
-
           <div className="flex items-center gap-6">
-            <button
-              onClick={getStats}
-              className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-zinc-400 hover:text-white"
-              title="Refresh Analytics"
-            >
+            <button onClick={getStats} className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-zinc-400 hover:text-white" title="Refresh Analytics">
               <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin text-cyan-400' : ''}`} />
             </button>
-            <div className="h-8 w-[1px] bg-zinc-800 hidden md:block"></div>
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-sm font-semibold text-zinc-500 hover:text-white transition-colors group"
-            >
+            <div className="h-8 w-[1px] bg-zinc-800 hidden md:block" />
+            <button onClick={() => navigate('/')} className="flex items-center gap-2 text-sm font-semibold text-zinc-500 hover:text-white transition-colors group">
               Sign Out <LogOut className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
@@ -121,13 +66,8 @@ export default function AdminDashboard() {
       </header>
 
       <main className="max-w-screen-2xl mx-auto px-6 py-12">
-
-        {/* Breadcrumb & Welcome */}
         <div className="mb-12">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-xs font-semibold tracking-widest text-zinc-600 hover:text-zinc-400 uppercase transition-colors mb-4"
-          >
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 text-xs font-semibold tracking-widest text-zinc-600 hover:text-zinc-400 uppercase transition-colors mb-4">
             <ChevronLeft className="w-4 h-4" /> System Core
           </button>
           <div className="flex items-center gap-3 mb-2">
@@ -136,24 +76,21 @@ export default function AdminDashboard() {
             </div>
           </div>
           <h2 className="text-4xl font-extrabold text-white tracking-tight">Executive Dashboard</h2>
-          <p className="text-zinc-500 mt-2 font-medium max-w-xl">
-            Real-time analytics and performance metrics for the Safer El3rbiat network. Track growth, inventory health, and engagement.
-          </p>
+          <p className="text-zinc-500 mt-2 font-medium max-w-xl">Real-time analytics and performance metrics for the Safer El3rbiat network.</p>
         </div>
 
         {error && (
           <div className="mb-8 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></div>
+              <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
               <span className="text-zinc-400 text-sm font-medium">{error}</span>
             </div>
             <button onClick={getStats} className="text-xs font-bold text-cyan-400 hover:underline">Retry Connection</button>
           </div>
         )}
 
-        {/* KPI Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {kpiCards.map((card) => (
+          {kpiCards.map(card => (
             <div key={card.id} className="bg-zinc-900/40 border border-zinc-800 p-6 rounded-3xl backdrop-blur-sm group hover:border-zinc-600 transition-all shadow-xl hover:shadow-cyan-900/5">
               <div className="flex items-start justify-between mb-8">
                 <div className="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 shadow-inner group-hover:bg-zinc-900 transition-colors">
@@ -164,15 +101,12 @@ export default function AdminDashboard() {
                   <span className="text-[10px] font-bold uppercase tracking-tighter">Live</span>
                 </div>
               </div>
-
               <div className="space-y-1">
                 <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest leading-none mb-2">{card.title}</p>
                 {loading ? (
-                  <div className="h-10 w-24 bg-zinc-800/50 rounded-lg animate-pulse mb-3"></div>
+                  <div className="h-10 w-24 bg-zinc-800/50 rounded-lg animate-pulse mb-3" />
                 ) : (
-                  <h3 className="text-5xl font-black text-white tracking-tighter mb-4 tabular-nums">
-                    {card.value}
-                  </h3>
+                  <h3 className="text-5xl font-black text-white tracking-tighter mb-4 tabular-nums">{card.value}</h3>
                 )}
                 <div className="pt-4 border-t border-zinc-800/50 mt-4">
                   <p className="text-zinc-400 font-bold text-sm leading-tight">{card.label}</p>
@@ -183,20 +117,17 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Secondary Info Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-zinc-900/40 border border-zinc-800 p-8 rounded-3xl backdrop-blur-sm flex flex-col items-center justify-center text-center py-20 border-dashed">
             <div className="w-16 h-16 rounded-full bg-zinc-950 flex items-center justify-center mb-6">
               <LayoutDashboard className="w-8 h-8 text-zinc-800" />
             </div>
             <h4 className="text-white font-bold text-lg mb-2">Performance Visualizations Coming Soon</h4>
-            <p className="text-zinc-500 text-sm max-w-sm mx-auto">
-              We are currently aggregating historical data to generate trend charts and predictive analytics.
-            </p>
+            <p className="text-zinc-500 text-sm max-w-sm mx-auto">We are currently aggregating historical data to generate trend charts and predictive analytics.</p>
             <div className="mt-8 flex gap-3">
-              <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
-              <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
-              <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
+              <div className="w-2 h-2 rounded-full bg-zinc-800" />
+              <div className="w-2 h-2 rounded-full bg-zinc-800" />
+              <div className="w-2 h-2 rounded-full bg-zinc-800" />
             </div>
           </div>
 
@@ -226,17 +157,14 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-
       </main>
 
-      {/* Loading Overlay */}
       {loading && stats === null && (
         <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
           <Loader2 className="w-12 h-12 text-cyan-400 animate-spin mb-4" />
           <p className="text-zinc-500 font-bold text-xs uppercase tracking-[0.3em] animate-pulse">Syncing Control Panel</p>
         </div>
       )}
-
     </div>
   );
 }
